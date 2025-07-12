@@ -64,10 +64,10 @@ def get_args_parser_pre():
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
         # DataSet
-    parser.add_argument('--train_folder'   ,default="/data/disk_2/zhaojinxin/brain_prediction/opt/zhaojinxin/TSAN/brain_age_estimation_transfer_learning/train/"       ,type=str, help="Train set data path ")
-    parser.add_argument('--valid_folder'   ,default="/data/disk_2/zhaojinxin/brain_prediction/opt/zhaojinxin/TSAN/brain_age_estimation_transfer_learning/val/"        ,type=str, help="Validation set data path ")
-    parser.add_argument('--test_folder'    ,default="/data/disk_2/zhaojinxin/brain_prediction/opt/zhaojinxin/TSAN/brain_age_estimation_transfer_learning/test/"        ,type=str, help="Test set data path ")
-    parser.add_argument('--excel_path'     ,default="/data/disk_2/zhaojinxin/brain_prediction/opt/zhaojinxin/TSAN/18_combine.xls",type=str, help="Excel file path ")
+    parser.add_argument('--train_folder'   ,default="/train/"       ,type=str, help="Train set data path ")
+    parser.add_argument('--valid_folder'   ,default="/val/"        ,type=str, help="Validation set data path ")
+    parser.add_argument('--test_folder'    ,default="/test/"        ,type=str, help="Test set data path ")
+    parser.add_argument('--excel_path'     ,default="/18_combine.xls",type=str, help="Excel file path ")
 
     parser.add_argument('--mask_type', default='cube')
     parser.add_argument('--output_dir', type=str, default='./ckpt_scale_withgender/',

@@ -32,12 +32,12 @@ def get_args_parser():
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
     # DataSet
-    parser.add_argument('--train_folder'   ,default="/data/disk_2/zhaojinxin/brain_prediction/opt/zhaojinxin/TSAN/brain_age_estimation_transfer_learning/train/"       ,type=str, help="Train set data path ")
-    parser.add_argument('--valid_folder'   ,default="/data/disk_2/zhaojinxin/brain_prediction/opt/zhaojinxin/TSAN/brain_age_estimation_transfer_learning/val/"        ,type=str, help="Validation set data path ")
-    parser.add_argument('--test_folder'    ,default="/data/disk_2/zhaojinxin/brain_prediction/opt/zhaojinxin/TSAN/brain_age_estimation_transfer_learning/test/"        ,type=str, help="Test set data path ")
-    parser.add_argument('--excel_path'     ,default="/data/disk_2/zhaojinxin/brain_prediction/opt/zhaojinxin/TSAN/18_combine.xls",type=str, help="Excel file path ")
+    parser.add_argument('--train_folder'   ,default="/train/"       ,type=str, help="Train set data path ")
+    parser.add_argument('--valid_folder'   ,default="/val/"        ,type=str, help="Validation set data path ")
+    parser.add_argument('--test_folder'    ,default="/test/"        ,type=str, help="Test set data path ")
+    parser.add_argument('--excel_path'     ,default="/18_combine.xls",type=str, help="Excel file path ")
     parser.add_argument('--mask_type'      ,default='cube')
-    parser.add_argument('--output_dir', type=str, default='/data/disk_2/zhaojinxin/brain_prediction/bawd/Brain-Age-With-Disease-master/output_test/', help='root path for storing checkpoints, logs')
+    parser.add_argument('--output_dir', type=str, default='/output_test/', help='root path for storing checkpoints, logs')
     parser.add_argument('--num_workers', type=int, default=24, help='pytorch number of worker')
 
     # Model
@@ -88,7 +88,7 @@ def get_args_parser():
     parser.add_argument('--evaluate', action='store_true', help='evaluate only flag')
 
     # ranking loss
-    parser.add_argument('--sorter', default="/data/disk_2/zhaojinxin/brain_prediction/bawd/Brain-Age-With-Disease-master/loss/Sodeep_pretrain_weight/Tied_rank_best_lstmla_slen_8.pth.tar", help="When use ranking, the pretrained SoDeep sorter network weight need to be appointed")
+    parser.add_argument('--sorter', default="/loss/Sodeep_pretrain_weight/Tied_rank_best_lstmla_slen_8.pth.tar", help="When use ranking, the pretrained SoDeep sorter network weight need to be appointed")
     
 
     return parser.parse_args()

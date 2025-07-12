@@ -11,7 +11,7 @@ In this paper, we developed a Mask-based Brain Age estimation Network (MBA Net) 
 - Furthermore, we demonstrated that BAG serves as an independent predictor of both short-term and long-term stroke recurrence risk in patients with AICVD (Fig. 1c).
 
 
-![MBA](MBA.png)
+![MBA](MBA.jpg)
 
 ## Using the code:
 

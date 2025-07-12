@@ -15,14 +15,7 @@ In this paper, we developed a Mask-based Brain Age estimation Network (MBA Net) 
 
 ## Using the code:
 
-- ### **Clone this repository:**
-
-```
-git clone https://github.com/zjxhahaha/MBA.git
-```
-
-
-- ### **To install all the dependencies using pip:**
+### **To install all the dependencies using pip:**
 The code is stable using Python 3.8, to use it you will need:
  * Python >= 3.8
  * Pytorch >= 1.7
@@ -32,27 +25,14 @@ The code is stable using Python 3.8, to use it you will need:
  * sklearn
  * pandas
 
-Install dependencies with
 
-```
-pip install -r requirements.txt
-```
+### **Data Pre-Processing:**
+All T2-FLAIR MRI scans were preprocessed using a standardized FSL-based pipeline. First, each image was rigidly registered to a custom template ([GG-FLAIR-366](http://brainder.org)) using FLIRT and resampled to an isotropic resolution of 2×2×2 mm³ with a fixed matrix size of 91×109×91. Brain extraction was performed using ([SynthStrip](https://surfer.nmr.mgh.harvard.edu/docs/synthstrip/)) to remove non-brain tissues.
 
-- ### **Data Pre-Processing:**
-    All T2-FLAIR MRI scans were preprocessed using a standardized FSL-based pipeline. First, each image was rigidly registered to a custom template ([GG-FLAIR-366](http://brainder.org)) using FLIRT and resampled to an isotropic resolution of 2×2×2 mm³ with a fixed matrix size of 91×109×91. Brain extraction was performed using BET to remove non-brain tissues.
+For stroke patients, lesion masks derived from DWI were used to exclude infarct regions via masking. Finally, voxel intensities within the brain were z-score normalized, and non-brain areas were set to -1.
 
-    For stroke patients, lesion masks derived from DWI were used to exclude infarct regions via masking. Finally, voxel intensities within the brain were z-score normalized, and non-brain areas were set to -1.
 
-    ```
-    bash t2flair_preprocess.sh \
-     ./T2FLAIR.nii.gz \
-     ./GG-FLAIR-366.nii.gz \
-     ./lesion_mask.nii.gz \
-     ./preproc_output
-
-    ```
-
-- ### **Training Command:**
+### **Training Command:**
 
 Change the model_name, data_path and other settings in main.py to train them
 
@@ -62,7 +42,7 @@ python main.py
 ```
 
 
-- ### **Testing Command:**
+### **Testing Command:**
 
 Change the model_name, data_path and other settings in prediction.py to inference them
 
@@ -82,9 +62,9 @@ This study employed two publicly accessible datasets, along with a community coh
 
 In the clinical application phase, data from the CNSR-III<sup><a href="#ref4">4</a></sup> study were utilized, including 10,890 patients with AIS or TIA who had high-quality T2-FLAIR and DWI imaging
 
+The data from the ADNI database (https://www.adni.loni.usc.edu) and the OASIS database (https://www.oasis-brains.org/) are publicly accessible. The anonymized data from the PRECISE study and the CNSR-III study are available to fellow researchers on request for replicating procedures or reproducing the results by contacting the corresponding author and their institutions.
 
-
-## Reference
+### Reference
 
 [1]  <span name = "ref1">Weiner, M. W. et al. The Alzheimer's Disease Neuroimaging Initiative 3: Continued innovation for clinical trial improvement. Alzheimers Dement 13, 561-571 (2017).</span>
 
@@ -103,4 +83,7 @@ patients with acute ischaemic stroke or transient ischaemic attack: design,
 rationale and baseline patient characteristics. Stroke Vasc Neurol 4, 158-164 
 (2019). 
 </span>
+
+## To Cite Us
+Hongyu Zhou, Ziyang Liu, et al. Deep learning-based brain age predicts stroke recurrence in acute ischemic cerebrovascular disease, 2025
 

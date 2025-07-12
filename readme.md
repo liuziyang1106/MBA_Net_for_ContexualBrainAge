@@ -39,7 +39,7 @@ pip install -r requirements.txt
 ```
 
 - ### **Data Pre-Processing:**
-    All T2-FLAIR MRI scans were preprocessed using a standardized FSL-based pipeline. First, each image was rigidly registered to a custom template (GG-FLAIR-366) using FLIRT and resampled to an isotropic resolution of 2×2×2 mm³ with a fixed matrix size of 91×109×91. Brain extraction was performed using BET to remove non-brain tissues.
+    All T2-FLAIR MRI scans were preprocessed using a standardized FSL-based pipeline. First, each image was rigidly registered to a custom template ([GG-FLAIR-366](http://brainder.org)) using FLIRT and resampled to an isotropic resolution of 2×2×2 mm³ with a fixed matrix size of 91×109×91. Brain extraction was performed using BET to remove non-brain tissues.
 
     For stroke patients, lesion masks derived from DWI were used to exclude infarct regions via masking. Finally, voxel intensities within the brain were z-score normalized, and non-brain areas were set to -1.
 

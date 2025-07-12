@@ -29,7 +29,7 @@ def get_args_parser():
     parser.add_argument('--train_folder'   ,default="/train/"       ,type=str, help="Train set data path ")
     parser.add_argument('--valid_folder'   ,default="/val/"        ,type=str, help="Validation set data path ")
     parser.add_argument('--test_folder'    ,default="/test/"        ,type=str, help="Test set data path ")
-    parser.add_argument('--excel_path'     ,default="/18_combine.xls",type=str, help="Excel file path ")
+    parser.add_argument('--excel_path'     ,default="/samples.xls",type=str, help="Excel file path ")
     parser.add_argument('--mask_type'      ,default='cube')
     parser.add_argument('--output_dir', type=str, default='/output_test/', help='root path for storing checkpoints, logs')
     parser.add_argument('--num_workers', type=int, default=24, help='pytorch number of worker')
@@ -81,9 +81,6 @@ def get_args_parser():
     parser.add_argument('--pretrained', type=str, default='', help='checkpoint file path to load backbone weights')
     parser.add_argument('--evaluate', action='store_true', help='evaluate only flag')
 
-    # ranking loss
-    parser.add_argument('--sorter', default="/loss/Sodeep_pretrain_weight/Tied_rank_best_lstmla_slen_8.pth.tar", help="When use ranking, the pretrained SoDeep sorter network weight need to be appointed")
-    
 
     return parser.parse_args()
 
@@ -111,12 +108,8 @@ def main(args, results):
     
     transforms = tio.Compose(
         [
-        #  tio.RandomAffine(scales=0.75),
          tio.RandomFlip(flip_probability=0.5, axes=('LR',)),
-        #  tio.RandomBiasField(coefficients=1),
-        #  tio.RandomSpike(),
-        #  tio.RandomNoise(),
-        #  tio.RandomBlur()
+         tio.RandomNoise(),
         ]
     )
     

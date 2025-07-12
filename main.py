@@ -8,19 +8,13 @@ import torch.backends.cudnn as cudnn
 from torch.utils.data import DataLoader
 import tensorboardX   
 import torchio as tio 
-from DataSet import IMG_Folder, IMG_Folder_with_mask, Integer_Multiple_Batch_Size
-import timm.optim.optim_factory as optim_factory
+from DataSet import  IMG_Folder_with_mask, Integer_Multiple_Batch_Size
 from network.ScaleDense import ScaleDense
 from Inference import Inference
 from utils.Tools import *
 from utils.lr_scheduler import build_scheduler
 from utils.EarlyStopping import EarlyStopping
 from engine import train_one_epoch,validate_one_epoch
-from loss.Matrix_loss import *
-from loss.Ranking_loss import rank_difference_loss
-from network.resnet import *
-from network.CNN import CNN
-from network.Global_Local_Transformer import GlobalLocalBrainAge
 
 # Set Default Parameter
 torch.manual_seed(42)
@@ -173,18 +167,10 @@ def main(args, results):
     # Define Loss function
     loss_func_dict = {'l1': nn.L1Loss().to(device)
                      ,'mse': nn.MSELoss().to(device)
-                    #  ,'ranking':rank_difference_loss(sorter_checkpoint_path=args.sorter,beta=args.beta).to(device)
-                     ,'matrix_l1':Matrix_distance_loss(p=2)
-                     ,'matrix_l2':Matrix_distance_L2_loss(p=2)
-                     ,'matrix_l3':Matrix_distance_L3_loss(p=2)
-                     ,'ranking':rank_difference_loss(sorter_checkpoint_path=args.sorter
-                                                     ).to(device)
                      }
         
-    criterion1 = loss_func_dict['mse']
-    criterion2 = loss_func_dict['ranking']
-    criterion3 = loss_func_dict['matrix_l1']
-    criterion4 = loss_func_dict['matrix_l2']
+    criterion = loss_func_dict['mse']
+
     
     sum_writer = tensorboardX.SummaryWriter(args.output_dir)
 
@@ -192,13 +178,12 @@ def main(args, results):
     for epoch in range(args.start_epoch, args.epochs):
         train_stats = train_one_epoch(
                       model=model, data_loader=train_loader, optimizer=optimizer,epoch=epoch,
-                      criterion_1=criterion1, criterion_2=criterion2, criterion_3=criterion3,
-                      criterion_4=criterion4, args=args,device=device
+                      criterion=criterion, args=args,device=device
                       )
         
         valid_stats = validate_one_epoch(
                       model=model, data_loader=val_loader,
-                      criterion_1=criterion1, criterion_2=criterion2, args=args,device=device
+                      criterion=criterion, args=args,device=device
                       )
         
         # ===========  learning rate decay =========== #  
@@ -267,7 +252,7 @@ def main(args, results):
                 
                 Test_state = Inference(test_loader
                                       ,model
-                                      ,criterion1
+                                      ,criterion
                                       ,device
                                       ,ues_masked_img= True
                                       ,args=args
@@ -282,7 +267,7 @@ def main(args, results):
                 
                 Test_state = Inference(test_loader
                                       ,model
-                                      ,criterion1
+                                      ,criterion
                                       ,device
                                       ,ues_masked_img= False
                                       ,args=args

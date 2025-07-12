@@ -8,10 +8,10 @@ from utils.Tools import *
 cons_lambda = 5
 
 def cal_loss(criterion, raw_img_out, mask_img_out, target):
-    loss0 = criterion(raw_img_out, target)
-    loss1 = criterion(mask_img_out, target)
-    loss2 = criterion( raw_img_out, mask_img_out)
-    loss = ( loss0 +  loss1) + cons_lambda * loss2
+    loss1 = criterion(raw_img_out, target)
+    loss2 = criterion(mask_img_out, target)
+    loss_consistency = criterion( raw_img_out, mask_img_out)
+    loss = ( loss1 +  loss2) + cons_lambda * loss_consistency
     return loss
 
 def cal_ranking_loss(criterion, raw_img_out, mask_img_out, target, out_nograd):
@@ -21,7 +21,7 @@ def cal_ranking_loss(criterion, raw_img_out, mask_img_out, target, out_nograd):
     loss = ( loss0 +  loss1) + cons_lambda * loss2
     return loss
 
-def train_one_epoch(model, data_loader, optimizer, device, epoch, criterion_1, criterion_2, criterion_3, criterion_4, args):
+def train_one_epoch(model, data_loader, optimizer, device, epoch, criterion, args):
     
     model.train(True)
 
@@ -29,10 +29,6 @@ def train_one_epoch(model, data_loader, optimizer, device, epoch, criterion_1, c
     masked_MAE = AverageMeter()
     raw_MAE = AverageMeter()
 
-    LOSS1 = AverageMeter()
-    LOSS2 = AverageMeter()
-    LOSS3 = AverageMeter()
-    LOSS4 = AverageMeter()
     model.train()
     for idx, (img, img_mask, sid, target, male) in enumerate(data_loader):
 
@@ -57,41 +53,24 @@ def train_one_epoch(model, data_loader, optimizer, device, epoch, criterion_1, c
         out_nograd = mask_img_out.detach()
         out_nograd = out_nograd.to(device)
 
-        loss1 = cal_loss(criterion_1, raw_img_out, mask_img_out, target)
-        # loss2 = cal_ranking_loss(criterion_2, raw_img_out, mask_img_out, target, out_nograd)
-        # loss3 = cal_loss(criterion_3, raw_img_out, mask_img_out, target)
+        loss = cal_loss(criterion, raw_img_out, mask_img_out, target)
 
-        loss2 = 0.
-        loss3 = 0.
-        loss4 = 0.
 
-        loss = loss1
         
         # masked_mae = metric(mask_img_out.detach(), target.detach().cpu())
         raw_mae = metric(raw_img_out.detach(), target.detach().cpu())
         losses.update(loss, img.size(0))
-        LOSS1.update(loss1,img.size(0))
-        LOSS2.update(loss2,img.size(0))
-        LOSS3.update(loss3, img.size(0))
-        LOSS4.update(loss4, img.size(0))
+
         # masked_MAE.update(masked_mae, img.size(0))
         raw_MAE.update(raw_mae, img.size(0))
 
         if idx % args.print_freq == 0:
             print(
                   'Epoch: [{0} / {1}]   [step {2}/{3}]\t'
-                  'Loss1 {LOSS1.val:.3f} ({LOSS1.avg:.3f})\t'
-                  'Loss2 {LOSS2.val:.3f} ({LOSS2.avg:.3f})\t'
-                  'Loss3 {LOSS3.val:.3f} ({LOSS3.avg:.3f})\t'
-                  'Loss4 {LOSS4.val:.3f} ({LOSS4.avg:.3f})\t'
                   'Loss {loss.val:.4f} ({loss.avg:.4f})\t'
                 #   'mask MAE {mMAE.val:.3f} ({mMAE.avg:.3f})\t'
                   'raw MAE {rMAE.val:.3f}  ({rMAE.avg:.3f})\t'.format
                   ( epoch, args.epochs, idx, len(data_loader)
-                  , LOSS1=LOSS1
-                  , LOSS2=LOSS2
-                  , LOSS3=LOSS3
-                  , LOSS4=LOSS4
                   , loss=losses
                 #   , mMAE=masked_MAE
                   , rMAE=raw_MAE)
@@ -108,7 +87,7 @@ def train_one_epoch(model, data_loader, optimizer, device, epoch, criterion_1, c
             
     return {'loss':losses.avg, 'mae':masked_MAE.avg}
 
-def validate_one_epoch(model, data_loader, criterion_1, criterion_2, device, args):
+def validate_one_epoch(model, data_loader, criterion, device, args):
     '''
     For validation process
     
@@ -140,30 +119,9 @@ def validate_one_epoch(model, data_loader, criterion_1, criterion_2, device, arg
             # =========== compute output and loss =========== #
             out = model(img,male)
 
-            criterion_2 = torch.nn.L1Loss()
-            
-            if args.model == 'glt':
-                Loss1_list, Loss2_list = [], []
-                for y_pred in out:
-                    sub_loss1 = criterion_1(y_pred, target)
-                    Loss1_list.append(sub_loss1)
-                    
-                    if args.lambd > 0:
-                        sub_loss2 = criterion_2(y_pred, target)
-                    else:
-                        sub_loss2 = 0
-                    Loss2_list.append(sub_loss2)
-                loss1 = sum(Loss1_list)
-                loss2 = sum(Loss2_list)
-                out = sum(out) / len(out)
-            else:
-                # =========== compute loss =========== #
-                loss1 = criterion_1(out, target)
-                if args.lambd > 0:
-                    loss2 = criterion_2(out, target)
-                else:
-                    loss2 = 0
-            loss = loss1 + args.lambd * loss2
+            # =========== compute loss =========== #
+            loss = criterion(out, target)
+
             mae = metric(out.detach(), target.detach().cpu())
 
             # =========== measure accuracy and record loss =========== #

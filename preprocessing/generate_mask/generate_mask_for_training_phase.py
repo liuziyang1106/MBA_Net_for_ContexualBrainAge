@@ -49,11 +49,16 @@ def cube(img_shape, mask_shape, position):
     
 
 if __name__=="__main__":
-    #l=list()
-    root_img_path = "/data/ziyang/workspace/Age-Estimation/brain_age_prediction/data/NC/combine/normal/Valid/"
-    save_path = "/data/ziyang/workspace/Age-Estimation/brain_age_prediction/data/NC/combine/cube_masked_img/"
+    """
+    This script generates random masks for the training phase of brain age estimation.
+    It creates a series of masked images by applying random cube masks to the original images.
+    The masks are generated with random positions and sizes, and the masked images are saved in a specified directory.
+    """
+    
+    
+    root_img_path = "/data/workspace/MBA_brain_age_estimation/img"
+    save_path = "/data/workspace/MBA_brain_age_estimation/cube_masked_img/"
     file_list = os.listdir(root_img_path)
-    N = 0
     for idx in range(0, len(file_list)):
         img = nib.load(os.path.join(root_img_path, file_list[idx]))
         affine = img.affine
@@ -66,16 +71,13 @@ if __name__=="__main__":
 
         masked_img = img_data
         for i in range(iterations):
-            random_radius = randint(5,20)
-            random_center_x, random_center_y, random_center_z = randint(20, 70), randint(20, 100), randint(20, 70) 
-            # mask = sphere(img_shape, random_radius, (random_center_x, random_center_y, random_center_z))
+            random_radius = randint(5,30)
+            random_center_x, random_center_y, random_center_z = randint(20, 80), randint(20, 100), randint(20, 80) 
             mask = cube(img_shape,(random_radius, random_radius,random_radius), (random_center_x, random_center_y, random_center_z))
             mask = 1 - mask
             print((random_center_x, random_center_y, random_center_z),random_radius, np.sum(mask))
             masked_img = masked_img * mask 
         name = file_list[idx].replace('.nii.gz', '_mask.nii.gz')
         nib.Nifti1Image(masked_img,affine).to_filename(os.path.join(save_path, name))
-        N += 1
-        print(N)
          
 
